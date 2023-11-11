@@ -13,7 +13,10 @@ import aiohttp
 import asyncio
 import argparse
 import sys
-from colorama import Fore
+from colorama import Fore, init
+
+# Initialize (to reset the color back to what was set)
+init(autoreset=True)
 
 # Function to print help message
 def print_help():
