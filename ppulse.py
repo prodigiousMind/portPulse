@@ -61,7 +61,7 @@ if __name__ == '__main__':
         parser.add_argument('-t', '--target-ip', type=str, required=False, help='Target IP or hostname')
         parser.add_argument('-s', '--port-start', type=int, default=1, help='Start port (default: 1)')
         parser.add_argument('-e', '--port-end', type=int, default=65536, help='End port (default: 65535)')
-        parser.add_argument('string', nargs='*', help="string [garbage]")
+        parser.add_argument('help', nargs='*', help="print usage")
         args = parser.parse_args()
       
         # generate help if -t/--target-ip flag not passed
