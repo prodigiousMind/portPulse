@@ -1,0 +1,6 @@
+aiohttp
+asyncio
+argparse
+sys
+termcolor
+colorama
