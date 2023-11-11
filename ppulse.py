@@ -13,6 +13,7 @@ import aiohttp
 import asyncio
 import argparse
 import sys
+import termcolor
 from colorama import Fore, init
 
 # Initialize (to reset the color back to what was set)
@@ -21,8 +22,8 @@ init(autoreset=True)
 # Function to print help message
 def print_help():
     print("\nUsage: python {} -t [IP/Hostname] -s PortStart -e PortEnd".format(sys.argv[0]))
-    print(Fore.RED+str("[+]"), "Default PortStart=1 & PortEnd=65535")
-    print(Fore.BLUE+str("[+]"), "IP: Targer IP or Hostname\n")
+    print(termcolor.colored(text="[+] Default PortStart=1 & PortEnd=65535",color="red"))
+    print(termcolor.colored(text="[+] IP: Targer IP or Hostname\n",color="blue"))
 
 # Asynchronous function to send a GET request to the given URL
 async def fetch(session, url):
@@ -30,18 +31,19 @@ async def fetch(session, url):
         async with session.get(url, timeout=10) as response:
             return response.url
     except aiohttp.ClientResponseError as e:
-        print(Fore.GREEN+str("[+]"), url.split(":")[2], Fore.BLACK + " ->",Fore.RED,str(e.message).replace("\n","").replace("Expected HTTP/:","").replace("^","").strip()) 
+        print(termcolor.colored(text="[+] "+url.split(":")[2], color="green"),end="")
+        print(" ->",termcolor.colored(text=(str(e.message).replace("\n","").replace("Expected HTTP/:","").replace("^","").strip()), color="red"))
         return None
     except aiohttp.ClientConnectorError as e:
         return None
     except asyncio.TimeoutError:
-        print(Fore.GREEN+str("[+]"), url.split(":")[2])
+        print(termcolor.colored(text="[+] "+url.split(":")[2], color="green"))
         return None
     except ConnectionResetError:
-        print(Fore.GREEN+str("[+]"), url.split(":")[2])
+        print(termcolor.colored(text="[+] "+url.split(":")[2], color="green"))
         return None
     except Exception as e:
-        print(Fore.GREEN+str("[+]"), url.split(":")[2])
+        print(termcolor.colored(text="[+] "+url.split(":")[2], color="green"))
         return None
 
 # Main function to create tasks and gather responses
@@ -54,7 +56,7 @@ async def main(n, url):
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         for i in responses:
             if i:
-                print(Fore.GREEN+str("[+]"), i)
+                print(termcolor.colored(text="[+] "+str(i), color="blue"))
 
 # Entry point
 if __name__ == '__main__':
