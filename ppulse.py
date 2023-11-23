@@ -21,8 +21,9 @@ init(autoreset=True)
 
 # Function to print help message
 def print_help():
-    print("\nUsage: python {} -t [IP/Hostname] -s PortStart -e PortEnd".format(sys.argv[0]))
+    print("\nUsage: python {} -t [IP/Hostname] -w [max requests/sec] -s PortStart -e PortEnd".format(sys.argv[0]))
     print(termcolor.colored(text="[+] Default PortStart=1 & PortEnd=65535",color="red"))
+    print(termcolor.colored(text="[+] Default wrap=100",color="red"))
     print(termcolor.colored(text="[+] IP: Targer IP or Hostname\n",color="blue"))
 
 # Asynchronous function to send a GET request to the given URL
@@ -47,10 +48,10 @@ async def fetch(session, url):
         return None
 
 # Main function to create tasks and gather responses
-async def main(n, url):
+async def main(n, url, wrap):
     async with aiohttp.ClientSession() as session:
         tasks = []
-        for i in range(n-2000, n):
+        for i in range(n-wrap, n):
             if i < args.port_end:
                 tasks.append(fetch(session, str(url)+":"+str(i)))
         responses = await asyncio.gather(*tasks, return_exceptions=True)
@@ -66,6 +67,8 @@ if __name__ == '__main__':
         parser.add_argument('-t', '--target-ip', type=str, required=False, help='Target IP or hostname')
         parser.add_argument('-s', '--port-start', type=int, default=1, help='Start port (default: 1)')
         parser.add_argument('-e', '--port-end', type=int, default=65536, help='End port (default: 65535)')
+        parser.add_argument('-w', '--wrap', type=int, default=100, help='max requests/sec')
+        
         parser.add_argument('help', nargs='*', help="print usage")
         args = parser.parse_args()
       
@@ -74,9 +77,9 @@ if __name__ == '__main__':
             print_help()
         else:
           
-            # 2000 can be changed to another value
-            for n in range(args.port_start, args.port_end, 2000):
-                n = n+2000
+            # wrap can be changed to another value
+            for n in range(args.port_start, args.port_end, args.wrap):
+                n = n+args.wrap
                 url = 'http://'+args.target_ip
-                asyncio.run(main(n, url))
+                asyncio.run(main(n, url, args.wrap))
     except: print_help()
